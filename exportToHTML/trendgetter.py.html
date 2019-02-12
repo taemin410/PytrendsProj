@@ -1,0 +1,139 @@
+<html>
+<head>
+<title>trendgetter.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #808080;}
+.s3 { color: #6a8759;}
+.s4 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+trendgetter.py</font>
+</center></td></tr></table>
+<pre><span class="s0">from </span><span class="s1">pytrends.request </span><span class="s0">import </span><span class="s1">TrendReq</span>
+<span class="s0">import </span><span class="s1">matplotlib.pyplot </span><span class="s0">as </span><span class="s1">plt</span>
+<span class="s0">import </span><span class="s1">matplotlib </span><span class="s0">as </span><span class="s1">mpl</span>
+<span class="s0">import </span><span class="s1">datetime</span>
+
+<span class="s2">#Initialize pytrends class with TrendReq function ( hl : header language / tz = timezone which is set for 360 for US)</span>
+<span class="s1">pytrends = TrendReq(hl=</span><span class="s3">'en-EN'</span><span class="s0">, </span><span class="s1">tz=</span><span class="s4">360</span><span class="s1">)</span>
+
+<span class="s2">#Key word list for trend search</span>
+<span class="s1">kw_list = [</span><span class="s3">&quot;Iphone Xr&quot;</span><span class="s0">, </span><span class="s3">&quot;Apple&quot;</span><span class="s0">, </span><span class="s3">&quot;Samsung&quot;</span><span class="s0">, </span><span class="s3">&quot;Galaxy S9&quot;</span><span class="s1">]</span>
+
+<span class="s2">#Make a payload which brings trend data from google trend</span>
+#A lot of parameters can be used such as geo: region, timeframe, etc...)
+<span class="s1">pytrends.build_payload(kw_list</span><span class="s0">, </span><span class="s1">cat=</span><span class="s4">0</span><span class="s0">, </span><span class="s1">timeframe=</span><span class="s3">'today 3-m'</span><span class="s0">, </span><span class="s1">geo=</span><span class="s3">''</span><span class="s0">, </span><span class="s1">gprop=</span><span class="s3">''</span><span class="s1">)</span>
+
+
+<span class="s3">&quot;&quot;&quot;another way to call for data, there are several funcions in pytrends library, see  
+https://github.com/GeneralMills/pytrends/blob/master/README.md 
+&quot;&quot;&quot;</span>
+<span class="s2"># data= pytrends.get_historical_interest(kw_list, year_start=2018,</span>
+#                                  month_start=1, day_start=1, hour_start=0, year_end=2018,
+#                                  month_end=2, day_end=1, hour_end=0, cat=0, geo='', gprop='', sleep=0)
+
+
+#For our case, we look into interest_over_time() function's return value
+#This function returns a dataFrame (pandas)
+<span class="s1">data= pytrends.interest_over_time()</span>
+
+<span class="s2">#Trivial function that helps convert datetime object, you can ignore this for now</span>
+<span class="s0">from </span><span class="s1">pandas.plotting </span><span class="s0">import </span><span class="s1">register_matplotlib_converters</span>
+register_matplotlib_converters()
+
+
+
+<span class="s3">&quot;&quot;&quot; 
+Printing is not just used for printing messages. 
+Essentially, print() in programming make use of printing  
+as for programmers to easily debug and identify code and its progress. 
+ 
+Try uncommenting three to see what it does!  
+&quot;&quot;&quot;</span>
+<span class="s2">#print(data)</span>
+#print(data.shape)
+#print(data.columns)
+
+
+#We store the data in x, y variable to plot graph using data retrieved
+<span class="s1">x=data.index.values</span>
+y=data[kw_list]
+
+<span class="s2">#We use matplotlib.pyplot library for simple plotting</span>
+<span class="s1">plt.plot(x</span><span class="s0">, </span><span class="s1">y.Apple)</span>
+plt.plot(x<span class="s0">, </span><span class="s1">y.Samsung)</span>
+plt.plot(x<span class="s0">, </span><span class="s1">y[</span><span class="s3">&quot;Iphone Xr&quot;</span><span class="s1">])</span>
+plt.plot(x<span class="s0">, </span><span class="s1">y[</span><span class="s3">&quot;Galaxy S9&quot;</span><span class="s1">])</span>
+
+plt.legend([<span class="s3">'Apple'</span><span class="s0">, </span><span class="s3">'Samsung'</span><span class="s0">, </span><span class="s3">'Iphone Xr'</span><span class="s0">, </span><span class="s3">'Galaxy S9'</span><span class="s1">]</span><span class="s0">, </span><span class="s1">loc=</span><span class="s3">'upper left'</span><span class="s1">)</span>
+plt.title(<span class="s3">&quot;Trends data from the past three months&quot;</span><span class="s1">)</span>
+plt.xlabel(<span class="s3">&quot;Time&quot;</span><span class="s1">)</span>
+plt.ylabel(<span class="s3">&quot;Items&quot;</span><span class="s1">)</span>
+__<span class="s0">, </span><span class="s1">labels = plt.xticks()</span>
+plt.setp(labels<span class="s0">, </span><span class="s1">rotation=</span><span class="s4">45</span><span class="s1">)</span>
+
+plt.show()
+
+print(data.head())
+
+<span class="s0">import </span><span class="s1">os</span>
+<span class="s2"># if file does not exist write header</span>
+<span class="s0">if not </span><span class="s1">os.path.isfile(</span><span class="s3">'trend_data.csv'</span><span class="s1">):</span>
+   data.to_csv(<span class="s3">'trend_data.csv'</span><span class="s0">, </span><span class="s1">header=</span><span class="s3">'column_names'</span><span class="s1">)</span>
+<span class="s0">else</span><span class="s1">: </span><span class="s2"># else it exists so append without writing the header</span>
+   <span class="s1">data.to_csv(</span><span class="s3">'trend_data.csv'</span><span class="s0">, </span><span class="s1">mode=</span><span class="s3">'a'</span><span class="s0">, </span><span class="s1">header=</span><span class="s0">False</span><span class="s1">)</span>
+
+
+<span class="s2"># data.to_csv(&quot;trend_data.csv&quot;)</span>
+
+
+#exit is written to forbid plotly plotting
+<span class="s1">exit()</span>
+<span class="s3">&quot;&quot;&quot; 
+Ploting utility using plotly 
+Mainly deals with interactive Graphs 
+&quot;&quot;&quot;</span>
+<span class="s0">import </span><span class="s1">plotly</span>
+<span class="s0">import </span><span class="s1">plotly.graph_objs </span><span class="s0">as </span><span class="s1">go</span>
+
+Apple = go.Scatter(
+                x=data.index<span class="s0">,</span>
+                <span class="s1">y=data[</span><span class="s3">'Apple'</span><span class="s1">]</span><span class="s0">,</span>
+                <span class="s1">name = </span><span class="s3">&quot;Apple&quot;</span><span class="s0">,</span>
+                <span class="s1">line = dict(color = </span><span class="s3">'#17BECF'</span><span class="s1">)</span><span class="s0">,</span>
+                <span class="s1">opacity = </span><span class="s4">0.8</span><span class="s1">)</span>
+Iphone_Xr = go.Scatter(
+                x=data.index<span class="s0">,</span>
+                <span class="s1">y=data[</span><span class="s3">'Iphone Xr'</span><span class="s1">]</span><span class="s0">,</span>
+                <span class="s1">name = </span><span class="s3">&quot;Iphone Xr&quot;</span><span class="s0">,</span>
+                <span class="s1">opacity = </span><span class="s4">0.8</span><span class="s1">)</span>
+Galaxy_S9 = go.Scatter(
+                x=data.index<span class="s0">,</span>
+                <span class="s1">y=data[</span><span class="s3">'Galaxy S9'</span><span class="s1">]</span><span class="s0">,</span>
+                <span class="s1">name = </span><span class="s3">&quot;Galaxy S9&quot;</span><span class="s0">,</span>
+                <span class="s1">opacity = </span><span class="s4">0.8</span><span class="s1">)</span>
+Samsung = go.Scatter(
+                x=data.index<span class="s0">,</span>
+                <span class="s1">y=data[</span><span class="s3">'Samsung'</span><span class="s1">]</span><span class="s0">,</span>
+                <span class="s1">name = </span><span class="s3">&quot;Samsung&quot;</span><span class="s0">,</span>
+                <span class="s1">opacity = </span><span class="s4">0.8</span><span class="s1">)</span>
+
+data= [Apple<span class="s0">, </span><span class="s1">Iphone_Xr</span><span class="s0">, </span><span class="s1">Samsung</span><span class="s0">, </span><span class="s1">Galaxy_S9]</span>
+
+layout = dict(
+    title = <span class="s3">&quot;Apple &amp; Samsung Phone trend&quot;</span><span class="s0">,</span>
+<span class="s1">)</span>
+fig = dict(data=data<span class="s0">, </span><span class="s1">layout=layout)</span>
+
+
+plotly.offline.plot(fig<span class="s0">, </span><span class="s1">filename = </span><span class="s3">&quot;Apple &amp; Samsung Phone trend&quot; </span><span class="s0">, </span><span class="s1">auto_open=</span><span class="s0">True</span><span class="s1">)</span>
+</pre>
+</body>
+</html>

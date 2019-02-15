@@ -75,8 +75,15 @@ Try uncommenting three to see what it does!
 #print(data)
 #print(data.shape)
 #print(data.columns)
-""""""
+"""
+Note that if we bring several keywords together,
+then, the trend data is regularized into same data volume
+EX) 
+if 1000 search queries compared to 10000 queries, then 
+the number is likely to become 1:10 ratio.
+However, how the trend data is calculated is not fully known for google Trend.
 
+"""
 
 
 #We store the data in x, y variable to plot graph using data retrieved
@@ -112,13 +119,8 @@ else: # else it exists so append without writing the header
 
 
 
-
-
-
 #exit is written to forbid plotly plotting
 exit()
-
-
 
 
 """
